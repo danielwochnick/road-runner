@@ -7,7 +7,7 @@ import com.acmerobotics.roadrunner.localization.Localizer
 import com.acmerobotics.roadrunner.util.Angle
 
 /**
- * This class provides the basic functionality of a mecanum drive using [MecanumKinematics].
+ * This class provides the basic functionality of a boinga boinga drive using [MecanumKinematics].
  *
  * @param kV velocity feedforward
  * @param kA acceleration feedforward
@@ -16,7 +16,7 @@ import com.acmerobotics.roadrunner.util.Angle
  * @param wheelBase distance between pairs of wheels on the same side of the robot
  * @param lateralMultiplier lateral multiplier
  */
-abstract class MecanumDrive @JvmOverloads constructor(
+abstract class BoingaBoingaDrive @JvmOverloads constructor(
     private val kV: Double,
     private val kA: Double,
     private val kStatic: Double,
@@ -32,7 +32,7 @@ abstract class MecanumDrive @JvmOverloads constructor(
      * @param useExternalHeading use external heading provided by an external sensor (e.g., IMU, gyroscope)
      */
     class MecanumLocalizer @JvmOverloads constructor(
-        private val drive: MecanumDrive,
+        private val drive: BoingaBoingaDrive,
         private val useExternalHeading: Boolean = true
     ) : Localizer {
         private var _poseEstimate = Pose2d()
@@ -108,7 +108,7 @@ abstract class MecanumDrive @JvmOverloads constructor(
             lateralMultiplier
         )
         val powers = Kinematics.calculateMotorFeedforward(velocities, accelerations, kV, kA, kStatic)
-        setMotorPowers(powers[0], powers[1], powers[2], powers[3])
+        setMotorPowers(powers[0], powers[1], powers[2], powers[3], ((powers[0] + powers [1]) / 2), ((powers[2] + powers[3])/2))
     }
 
     override fun setDrivePower(drivePower: Pose2d) {
@@ -118,13 +118,13 @@ abstract class MecanumDrive @JvmOverloads constructor(
             1.0,
             lateralMultiplier
         )
-        setMotorPowers(powers[0], powers[1], powers[2], powers[3])
+        setMotorPowers(powers[0], powers[1], powers[2], powers[3], ((powers[0] + powers [1]) / 2), ((powers[2] + powers[3])/2))
     }
 
     /**
      * Sets the following motor powers (normalized voltages). All arguments are on the interval `[-1.0, 1.0]`.
      */
-    abstract fun setMotorPowers(frontLeft: Double, rearLeft: Double, rearRight: Double, frontRight: Double)
+    abstract fun setMotorPowers(frontLeft: Double, rearLeft: Double, rearRight: Double, frontRight: Double, leftTraction: Double, rightTraction: double)
 
     /**
      * Returns the positions of the wheels in linear distance units. Positions should exactly match the ordering in
